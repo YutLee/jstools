@@ -132,3 +132,76 @@ function arrayDiff(array1, array2) {
 		return newArray;
 	}
 }
+
+/**
+ * 根据名称获取对应url参数
+ * @param {string} name 必须，要获取的参数名称
+ * @return {Array} 返回获取的参数值
+ * @memberOf _global_
+ */
+function getParameterByName(name) {
+	name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
+	var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
+	results = regex.exec(location.search);
+	return results == null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+/**
+ * Ajax post 请求
+ * @param {string} url 必须，需要请求的url
+ * @param {string} params 可选，需要上传的参数
+ * @param {Function} beforeSend 可选，请求前执行的函数
+ * @param {Function} success 可选，请求成功时执行的函数
+ * @param {Function} error 可选，请求失败时执行的函数
+ * @memberOf _global_
+ */
+function post(url, params, beforeSend, success, error) {
+    var xhr = XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    var protocol = /^([\w-]+:)\/\//.test(url) ? RegExp.$1 : window.location.protocol;
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+    xhr.send(params);
+    xhr.onreadystatechange = function() {
+		var result, err;
+		if(xhr.readyState == 1) {
+			beforeSend.call(this);
+		}
+	    if(xhr.readyState == 4) {
+			if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304 || (xhr.status == 0 && protocol == 'file:')) {
+				success.call(this, xhr.responseText);
+	        }else {
+	        	error.call(this);
+	        }
+    	}
+    };
+}
+
+/**
+ * 事件绑定
+ * @param {Element} target 必须，需要绑定的元素
+ * @param {string} type 必须，需要绑定的事件名称
+ * @param {Function} handler 可选，事件触发时的回调函数
+ * @memberOf _global_
+ */
+function bind(target, type, handler) {
+    if(target.addEventListener) {
+        target.addEventListener(type, handler);
+    }else if(target.attachEvent){
+        target.attachEvent('on' + type, handler);
+    }
+}
+
+/**
+ * 事件解绑
+ * @param {Element} target 必须，需要解绑的元素
+ * @param {string} type 必须，需要解绑的事件名称
+ * @param {Function} handler 可选，事件触发时的回调函数
+ * @memberOf _global_
+ */
+function unbind(target, type, handler) {
+    if(target.removeEventListener) {
+        target.removeEventListener(type, handler);
+    }else if(target.detachEvent){
+        target.detachEvent('on' + type, handler);
+    }
+}
