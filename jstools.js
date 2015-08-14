@@ -205,3 +205,52 @@ function unbind(target, type, handler) {
         target.detachEvent('on' + type, handler);
     }
 }
+
+
+/**
+* 检测历史记录前进、后退
+*/
+(function() {
+var list = [],
+    idx = -1,
+    isB = false,
+    isF = false,
+    hash = {
+        isBack: function() {
+            return isB;
+        },
+        isForward: function() {
+            return isF;
+        },
+        push: function(hash) {
+            list.splice(idx + 1, list.length - idx - 1);
+            list.push(hash);
+            this.end();
+        },
+        index: function() {
+            return idx;
+        },
+        stack: function() {
+            return list;
+        },
+        end: function() {
+            idx = list.length - 1;
+        },
+        checkHash: function() {
+            var hash = location.hash.substr(1);
+            if (list[idx - 1] === hash) {
+                isB = true;
+                isF = false;
+                idx--;
+            } else if (list[idx + 1] === hash) {
+                isB = false;
+                isF = true;
+                idx++;
+            } else {
+                isB = false;
+                isF = false;
+                this.push(hash);
+            }
+        }
+    };
+})();
