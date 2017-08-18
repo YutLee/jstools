@@ -254,3 +254,35 @@ var list = [],
         }
     };
 })();
+
+/**
+* [async 工具函数，同步调用arr里的方法]
+* @param  {[Function]}   arr      [description]
+* @param  {Function} callback [description]
+* @example
+* async([
+*      function(cb) {
+*          setTimeout(function() {
+*              cb(1);
+*          }, 1);
+*       },
+*       function(cb) {
+*          cb(2);
+*       }
+*   ], function(results) {
+*       console.log(results);
+*   });
+*/
+function async(arr, callback) {
+    var completed = 0,
+        size = arr.length,
+	results = [];
+    for(var i = 0; i < size; i++) {
+        arr[i].call(null, function(cb) {
+	    results.push(cb);
+	    if(++completed == size) {
+	        callback(results);
+	    }
+        })
+    }
+}
