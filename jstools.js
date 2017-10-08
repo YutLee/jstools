@@ -55,6 +55,42 @@ function removeCookie(name) {
 };
 
 /**
+ * 检测对象是否存在
+ * @param {String} str 用于测试是否为对象字符串，如 'a.b.c', 'a.b["c"]'
+ * @param {Object} proto 用于测试是否为对象的父对象，如 str为 'b.c' 那么 proto需要传 b
+ * @param {Object} def 若用于测试的对象不存在，则返回该参数，不传则返回undefined
+ * @return
+ * @memberOf _global_
+ */
+function exist(str, proto, def) {
+      var dot = str.replace(/\["([^\[]|[^\]]+?)"\]/g, '.$1').replace(/\['([^\[]|[^\]]+?)'\]/, '.$1')
+      var arr = (dot || '').split('.')
+      var i = 1
+      var size = arr.length
+      var obj = proto
+
+      if(!obj || size < 2) {
+        return def
+      }
+
+      for(; i < size; i++) {
+        if(typeof obj != 'object') {
+          obj = def
+          break
+        }
+
+        if(!(arr[i] in obj)) {
+          obj = def
+          break
+        }
+
+        obj = obj[arr[i]]
+      }
+
+      return obj
+}
+
+/**
  * 去除字符串前后空格
  * @param {string} variable 用于测试的字符串
  * @return {string}
